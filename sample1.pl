@@ -1,0 +1,5 @@
+#!/usr/bin/perl print "content-type:text/html \n\n"; 
+use CGI; 
+use CGI::Carp(fatalsToBrowser);
+use strict;
+use DBI; my $q=new CGI; my $first=$q->param('fname'); my $last=$q->param('lname'); my $age=$q->param('age'); if($first eq ` ` || $last eq ` ` || $age eq ` `) { print "All THE FIELDS HAVE NOT BEEN ENTERED"; exit; } else { my $dbh=DBI->connect('DBI:mysql:web','root','root') or die "can't connect:".DBI->errstr(); my $sth=$dbh->prepare('insert into age_inf(firstname,lastname,age) values(?,?,?)'); $sth->execute($first,$last,$age) or die "cant execute sql:" .$sth->errstr(); $sth=$dbh->prepare("select * from age_info"); $sth->execute(); print "YOUR RECORD IS ADDED TO THE TABLE</br></br>"; print "<table><tr><th>Firstname</th><th>Lastname</th> <th>Age</th></tr>"; while(($first,$last,$age)=$sth->fetchrow()) { print "<tr><td>$first</td> <td>$last</td> <td>$age</td></tr>"; } print "</table>"; $sth->finish(); $dbh->disconnect(); }
